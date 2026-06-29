@@ -81,11 +81,9 @@ Sesuaikan konfigurasi koneksi database di file konfigurasi backend.
 Penutup
 Semoga aplikasi ini membantu dalam pengelolaan keuangan pribadi secara efektif. Jika mengalami kendala, silakan hubungi dosen pembimbing.
 
-Disusun oleh:Nama: Theo Aleksander WilliamNIM: 25552012015Kelas: TIF PK 23 CIDDosen Pengajar: Muhammad Reksa Ariansyah, M.KomTanggal: [Tanggal pembuatan]  
+Disusun oleh:Nama: Theo Aleksander WilliamNIM: 25552012015Kelas: TIF PK 23 CIDDosen Pengajar: Muhammad Reksa Ariansyah, M.KomTanggal: [29-06-2026]  
 
           
             
             
-          
-          
-Jika Anda ingin saya buatkan file `.md` langsung, beritahu saja! Anda juga bisa menyesuaikan bagian `[URL_REPO_ANDA]`, `[Tanggal pembuatan]`, dan lainnya sesuai kebutuhan.
+          Jika Anda ingin saya buatkan file `.md` langsung, beritahu saja! Anda juga bisa menyesuaikan bagian `[URL_REPO_ANDA]`, `[Tanggal pembuatan]`, dan lainnya sesuai kebutuhan.
