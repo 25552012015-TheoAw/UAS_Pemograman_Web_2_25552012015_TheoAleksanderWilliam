@@ -1,4 +1,3 @@
-# UAS_Pemograman_Web_2_25552012015_TheoAleksanderWilliam
 Aplikasi Pengelola Keuangan Pribadi
 Deskripsi Singkat
 Aplikasi ini adalah web app full-stack yang dirancang untuk membantu pengguna mengelola keuangan pribadi mereka dengan fitur pencatatan pemasukan dan pengeluaran. Aplikasi ini mengintegrasikan database PostgreSQL/MySQL dan menyediakan operasi CRUD lengkap yang saling berelasi, dengan antarmuka pengguna yang menarik dan responsif.
@@ -16,7 +15,13 @@ Backend: Node.js/Express (atau framework lain sesuai pilihan)
 Database: PostgreSQL / MySQL
 
 Panduan Instalasi dan Menjalankan Aplikasi
-1. Clone Repository           
+1. Clone Repository
+
+          
+            
+            
+          
+          git clone <URL_REPOSITORY_ANDA>
 cd <nama-folder-repo>
       2. Setup Database
 
@@ -24,6 +29,11 @@ Pastikan PostgreSQL/MySQL sudah terinstall dan berjalan.
 Buat database baru, misalnya keuangan_pribadi.
 Import skrip tabel berikut untuk membuat struktur database:
 
+
+          
+            
+            
+          
           -- Membuat tabel pemasukan
 CREATE TABLE pemasukan (
     id SERIAL PRIMARY KEY,
@@ -42,11 +52,22 @@ CREATE TABLE pengeluaran (
 );
       
 Pastikan konfigurasi koneksi database sudah sesuai di backend.
-3. Menjalankan Backend   
-cd backend
+
+3. Menjalankan Backend
+
+          
+            
+            
+          
+          cd backend
 npm install
 npm start
-4. Menjalankan Frontend
+      4. Menjalankan Frontend
+
+          
+            
+            
+          
           cd ../frontend
 npm install
 npm run dev
@@ -59,8 +80,6 @@ Pastikan database sudah berjalan dan tabel telah dibuat sebelum menjalankan back
 Sesuaikan konfigurasi koneksi database di file konfigurasi backend.
 
 
-Penutup
 Semoga aplikasi ini membantu dalam pengelolaan keuangan pribadi secara efektif. Jika ada kendala, silakan menghubungi dosen pembimbing.
 
-(Disusun oleh : Theo Aleksander William - 25552012015 - TIF PK 23 CID - )
-Dosen Pengajar : Muhammad Reksa Ariansyah , M.Kom
+(Disusun oleh: [Nama Anda])(NIM: [NIM Anda])(Kelas: [Kelas Anda])(Tanggal: [Tanggal])
