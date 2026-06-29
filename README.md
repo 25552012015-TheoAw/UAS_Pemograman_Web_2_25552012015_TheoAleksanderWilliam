@@ -1,33 +1,31 @@
-Aplikasi Pengelola Keuangan Pribadi
-Deskripsi Singkat
-Aplikasi ini adalah web app full-stack yang dirancang untuk membantu pengguna mengelola keuangan pribadi mereka dengan fitur pencatatan pemasukan dan pengeluaran. Aplikasi ini mengintegrasikan database PostgreSQL/MySQL dan menyediakan operasi CRUD lengkap yang saling berelasi, dengan antarmuka pengguna yang menarik dan responsif.
-Fitur Utama
+# Aplikasi Pengelola Keuangan Pribadi
 
-Input, edit, hapus data pemasukan dan pengeluaran
-Melihat ringkasan total pemasukan dan pengeluaran
-Menyusun laporan berdasarkan rentang tanggal
-Tampilan antarmuka yang menarik dan user-friendly
+## Deskripsi Singkat
+Aplikasi pengelola keuangan pribadi ini merupakan Web App Full-Stack yang memungkinkan pengguna untuk mencatat pemasukan dan pengeluaran secara mudah dan terstruktur. Aplikasi ini membantu pengguna dalam memantau arus kas serta mengelola keuangan pribadi secara efisien.
 
-Teknologi yang Digunakan
+## Fitur Utama
+- Input data pemasukan dan pengeluaran
+- Melihat total pemasukan dan pengeluaran
+- Menyusun laporan keuangan berdasarkan tanggal
+- Operasi CRUD lengkap untuk data pemasukan dan pengeluaran
+- Tampilan menarik dan responsif
 
-Frontend: HTML, CSS, JavaScript (atau framework/library sesuai pilihan)
-Backend: Node.js/Express (atau framework lain sesuai pilihan)
-Database: PostgreSQL / MySQL
+## Teknologi yang Digunakan
+- Frontend: HTML, CSS, JavaScript (atau framework pilihan)
+- Backend: Node.js/Express (atau framework pilihan)
+- Database: PostgreSQL / MySQL
 
-Panduan Instalasi dan Menjalankan Aplikasi
-1. Clone Repository
+## Instalasi dan Penjalankan Aplikasi
 
-          
-            
-            
-          
-          git clone <URL_REPOSITORY_ANDA>
+### 1. Clone Repository
+```bash
+git clone <URL_REPO_ANDA>
 cd <nama-folder-repo>
-      2. Setup Database
+      2. Buat dan Konfigurasi Database
 
 Pastikan PostgreSQL/MySQL sudah terinstall dan berjalan.
 Buat database baru, misalnya keuangan_pribadi.
-Import skrip tabel berikut untuk membuat struktur database:
+Import tabel menggunakan skrip SQL berikut:
 
 
           
@@ -51,7 +49,7 @@ CREATE TABLE pengeluaran (
     catatan TEXT
 );
       
-Pastikan konfigurasi koneksi database sudah sesuai di backend.
+Pastikan konfigurasi koneksi database di backend sudah benar.
 
 3. Menjalankan Backend
 
@@ -72,14 +70,22 @@ npm start
 npm install
 npm run dev
       5. Akses Aplikasi
-Buka browser dan akses http://localhost:3000 (atau port sesuai pengaturan).
+Buka browser dan menuju http://localhost:3000 (atau port yang digunakan).
 
 Catatan
 
-Pastikan database sudah berjalan dan tabel telah dibuat sebelum menjalankan backend.
+Pastikan database sudah berjalan dan tabel sudah dibuat sebelum menjalankan backend.
 Sesuaikan konfigurasi koneksi database di file konfigurasi backend.
 
 
-Semoga aplikasi ini membantu dalam pengelolaan keuangan pribadi secara efektif. Jika ada kendala, silakan menghubungi dosen pembimbing.
+Penutup
+Semoga aplikasi ini membantu dalam pengelolaan keuangan pribadi secara efektif. Jika mengalami kendala, silakan hubungi dosen pembimbing.
 
-(Disusun oleh: [Nama Anda])(NIM: [NIM Anda])(Kelas: [Kelas Anda])(Tanggal: [Tanggal])
+Disusun oleh:Nama: Theo Aleksander WilliamNIM: 25552012015Kelas: TIF PK 23 CIDDosen Pengajar: Muhammad Reksa Ariansyah, M.KomTanggal: [Tanggal pembuatan]  
+
+          
+            
+            
+          
+          
+Jika Anda ingin saya buatkan file `.md` langsung, beritahu saja! Anda juga bisa menyesuaikan bagian `[URL_REPO_ANDA]`, `[Tanggal pembuatan]`, dan lainnya sesuai kebutuhan.
