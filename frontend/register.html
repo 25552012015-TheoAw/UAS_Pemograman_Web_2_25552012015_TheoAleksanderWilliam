@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Daftar - HoldMoney</title>
+</head>
+
+<!-- Body diubah ke background gelap -->
+
+<body class="bg-[#0F172A] flex items-center justify-center min-h-screen">
+
+    <!-- Card diubah ke slate-800 -->
+    <div class="bg-[#1E293B] p-10 rounded-3xl shadow-2xl w-full max-w-sm border border-[#334155]">
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-900/50">
+                <span class="text-white text-2xl font-black">HM</span>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-extrabold text-white mb-2 text-center">Buat Akun</h2>
+        <p class="text-slate-400 mb-8 text-center text-sm">Mulai kelola keuangan Anda sekarang.</p>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 mb-1 ml-1">Username</label>
+                <!-- Input field disesuaikan untuk mode gelap -->
+                <input id="user" class="w-full p-4 bg-[#0F172A] border border-[#334155] text-white rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Pilih username">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 mb-1 ml-1">Password</label>
+                <input id="pass" type="password" class="w-full p-4 bg-[#0F172A] border border-[#334155] text-white rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Min. 6 karakter">
+            </div>
+            <button onclick="register()" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-900">Daftar Sekarang</button>
+        </div>
+
+        <p class="mt-6 text-center text-sm text-slate-400">
+            Sudah punya akun? <a href="login.html" class="text-indigo-400 font-bold hover:underline">Masuk</a>
+        </p>
+    </div>
+
+    <script>
+        async function register() {
+            const username = document.getElementById('user').value;
+            const password = document.getElementById('pass').value;
+
+            if (!username || !password) {
+                alert("Username dan Password wajib diisi!");
+                return;
+            }
+
+            const res = await fetch('http://localhost:5000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            });
+
+            if (res.ok) {
+                alert("Registrasi berhasil! Silakan masuk.");
+                window.location.href = 'login.html';
+            } else {
+                alert("Gagal: Username tersebut sudah terdaftar. Silakan pilih username lain.");
+            }
+        }
+    </script>
+</body>
+
+</html>

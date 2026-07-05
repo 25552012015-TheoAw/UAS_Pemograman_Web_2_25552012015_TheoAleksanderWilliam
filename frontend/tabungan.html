@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Tabungan - HoldMoney</title>
+</head>
+
+<body class="bg-[#F8FAFC] font-sans">
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-[#1E293B] text-white p-6">
+            <h2 class="text-2xl font-black text-indigo-400 mb-10">HoldMoney.</h2>
+            <nav class="space-y-4">
+                <a href="dashboard.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Ringkasan</a>
+                <a href="transaksi.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Transaksi</a>
+                <a href="anggaran.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Anggaran</a>
+                <a href="tabungan.html" class="block py-2 px-4 bg-indigo-600 rounded-xl font-bold">Tabungan</a>
+                <a href="kalender.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Kalender</a>
+                <a href="kategori.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Kategori</a>
+            </nav>
+            <div class="mt-auto pt-10">
+                <button onclick="handleLogout()" class="flex items-center w-full py-2 px-4 text-rose-400 hover:bg-slate-700 rounded-xl transition font-bold">
+                <span class="mr-2">⏻</span> Logout
+                </button>
+        </aside>
+
+        <main class="flex-1 p-10">
+            <header class="mb-8">
+                <h1 class="text-3xl font-extrabold text-slate-800">Target Tabungan</h1>
+                <p class="text-slate-500">Capai impian Anda dengan menabung secara konsisten.</p>
+            </header>
+
+            <div id="savingsList" class="space-y-6 max-w-2xl">
+            </div>
+        </main>
+        </div>
+
+        <script src="script.js"></script>
+        <script>
+            async function loadSavings() {
+                const savings = await fetchData('/savings');
+                const container = document.getElementById('savingsList');
+
+                if (savings.length === 0) {
+                    container.innerHTML = `<div class="bg-white p-8 rounded-2xl text-center text-slate-400 border border-slate-100">Belum ada target tabungan yang diatur.</div>`;
+                    return;
+                }
+
+                container.innerHTML = savings.map(s => {
+                    const percent = Math.min((s.current_amount / s.target_amount) * 100, 100);
+                    return `
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between mb-4 items-center">
+                        <h3 class="font-bold text-xl text-slate-800">${s.name}</h3>
+                        <button onclick="deleteSavings(${s.id})" class="text-rose-500 hover:text-rose-700 text-sm font-bold">Hapus</button>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-4 mb-3">
+                        <div class="bg-indigo-600 h-4 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="flex justify-between text-sm font-bold text-slate-600">
+                        <span>Terkumpul: Rp ${parseInt(s.current_amount).toLocaleString('id-ID')}</span>
+                        <span>Target: Rp ${parseInt(s.target_amount).toLocaleString('id-ID')}</span>
+                    </div>
+                </div>`;
+                }).join('');
+            }
+
+            async function deleteSavings(id) {
+                if (confirm('Yakin ingin menghapus target tabungan ini?')) {
+                    await fetch(`http://localhost:5000/savings/${id}`, {
+                        method: 'DELETE'
+                    });
+                    loadSavings();
+                }
+            }
+
+            loadSavings();
+        </script>
+</body>
+
+</html>

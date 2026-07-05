@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>HoldMoney - Dashboard</title>
+</head>
+
+<body class="bg-[#0F172A] font-sans text-slate-100">
+
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-[#1E293B] p-6 flex flex-col border-r border-[#334155]">
+            <h2 class="text-2xl font-black text-indigo-400 mb-10">HoldMoney.</h2>
+            <nav class="space-y-4">
+                <a href="dashboard.html" class="block py-2 px-4 bg-indigo-600 rounded-xl font-bold">Ringkasan</a>
+                <a href="transaksi.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Transaksi</a>
+                <a href="anggaran.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Anggaran</a>
+                <a href="tabungan.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Tabungan</a>
+                <a href="kalender.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Kalender</a>
+                <a href="kategori.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Kategori</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-10">
+            <header class="mb-8">
+                <h1 class="text-3xl font-extrabold text-white">Ringkasan Keuangan</h1>
+                <p class="text-slate-400">Pantau arus kas dan analisis relasi data Anda.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-[#1E293B] p-6 rounded-2xl border border-[#334155]">
+                    <p class="text-sm text-slate-400">Total Pemasukan</p>
+                    <h3 id="inc" class="text-2xl font-bold text-emerald-400">Rp 0</h3>
+                </div>
+                <div class="bg-[#1E293B] p-6 rounded-2xl border border-[#334155]">
+                    <p class="text-sm text-slate-400">Total Pengeluaran</p>
+                    <h3 id="exp" class="text-2xl font-bold text-rose-400">Rp 0</h3>
+                </div>
+                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-2xl shadow-lg">
+                    <p class="text-indigo-100 text-sm">Sisa Saldo</p>
+                    <h3 id="bal" class="text-2xl font-bold text-white">Rp 0</h3>
+                </div>
+            </div>
+
+            <div class="bg-[#1E293B] p-8 rounded-2xl border border-[#334155] mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-white text-xl">Analisis Keuangan</h3>
+                    <button class="bg-[#0F172A] px-4 py-1 rounded-lg text-sm border border-[#334155] text-slate-300">Semua Transaksi</button>
+                </div>
+                <div class="h-[250px]"><canvas id="financeChart"></canvas></div>
+                <div class="flex justify-center gap-6 mt-4">
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span class="text-sm text-slate-300">Pemasukan</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500"></span><span class="text-sm text-slate-300">Pengeluaran</span></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-[#1E293B] p-8 rounded-2xl border border-[#334155]">
+                    <h3 class="font-bold text-white mb-4">Rincian Pengeluaran</h3>
+                    <div id="categorySummary" class="space-y-3"></div>
+                </div>
+                <div class="bg-[#1E293B] p-8 rounded-2xl border border-[#334155]">
+                    <h3 class="font-bold text-white mb-4">Status Anggaran</h3>
+                    <div id="budgetMonitor" class="space-y-3"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let myChart;
+        async function initDashboard() {
+            const data = await fetchData('/transactions');
+            const catSummary = await fetchData('/transactions/by-category');
+            const budgetData = await fetchData('/budgets');
+
+            let totalInc = 0,
+                totalExp = 0;
+            data.forEach(d => {
+                const amount = parseFloat(d.amount);
+                d.type === 'pemasukan' ? totalInc += amount : totalExp += amount;
+            });
+
+            document.getElementById('inc').innerText = 'Rp ' + totalInc.toLocaleString('id-ID');
+            document.getElementById('exp').innerText = 'Rp ' + totalExp.toLocaleString('id-ID');
+            document.getElementById('bal').innerText = 'Rp ' + (totalInc - totalExp).toLocaleString('id-ID');
+
+            // Render Rincian
+            document.getElementById('categorySummary').innerHTML = catSummary.map(item => `
+                <div class="flex justify-between items-center bg-[#0F172A] p-3 rounded-xl border border-[#334155]">
+                    <span class="text-slate-300 font-semibold">${item.name}</span>
+                    <span class="text-rose-400 font-bold">Rp ${parseFloat(item.total).toLocaleString('id-ID')}</span>
+                </div>
+            `).join('');
+
+            // Render Anggaran
+            document.getElementById('budgetMonitor').innerHTML = catSummary.map(item => {
+                const budget = budgetData.find(b => b.category_name === item.name) || {
+                    limit: 0
+                };
+                const sisa = budget.limit - item.total;
+                return `
+                    <div class="flex justify-between items-center bg-[#0F172A] p-3 rounded-xl border border-[#334155]">
+                        <span class="text-slate-300 font-semibold">${item.name}</span>
+                        <span class="${sisa < 0 ? 'text-rose-400' : 'text-emerald-400'} font-bold">
+                            ${sisa < 0 ? 'Over' : 'Aman'} (Sisa: Rp ${sisa.toLocaleString('id-ID')})
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            renderChart(totalInc, totalExp);
+        }
+
+        function renderChart(inc, exp) {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Start', 'Current'],
+                    datasets: [{
+                        label: 'Pemasukan',
+                        data: [0, inc],
+                        borderColor: '#10b981',
+                        tension: 0.4
+                    }, {
+                        label: 'Pengeluaran',
+                        data: [0, exp],
+                        borderColor: '#f43f5e',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        initDashboard();
+    </script>
+</body>
+
+</html>
