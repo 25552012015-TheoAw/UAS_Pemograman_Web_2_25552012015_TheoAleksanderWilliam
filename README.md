@@ -74,8 +74,11 @@ Buka file ```frontend/dashboard.html``` di browser Anda.
 
 👤 Pengembang
 Nama: Theo Aleksander William
+
 NIM: 25552012015
+
 Kelas: TIF PK 23 CID
+
 Dosen Pengajar/Pembimbing :Muhammad Reksa Ariansyah, M.Kom.
 
 
