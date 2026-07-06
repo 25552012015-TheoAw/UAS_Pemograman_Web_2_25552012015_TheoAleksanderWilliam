@@ -1,6 +1,6 @@
 # 💰 HoldMoney - Personal Financial Tracker
 
-📝 Deskripsi Aplikasi
+## 📝 Deskripsi Aplikasi
 * HoldMoney adalah aplikasi manajemen keuangan pribadi berbasis full-stack yang dirancang untuk membantu pengguna mengontrol arus kas dengan lebih cerdas. Dengan antarmuka yang modern dan responsif, aplikasi ini memungkinkan pengguna untuk melakukan pencatatan transaksi secara terperinci, mengelola anggaran bulanan berdasarkan kategori, serta menetapkan target tabungan untuk mencapai tujuan finansial di masa depan. Dibangun dengan arsitektur yang tangguh, HoldMoney memastikan data keuangan Anda terorganisir, aman, dan mudah dipantau kapan saja.
 ---
 
