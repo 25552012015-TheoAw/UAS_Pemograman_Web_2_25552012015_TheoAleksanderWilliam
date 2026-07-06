@@ -9,7 +9,6 @@
 </head>
 
 <body class="bg-[#F8FAFC] font-sans">
-
     <div class="flex min-h-screen">
         <aside class="w-64 bg-[#1E293B] text-white p-6">
             <h2 class="text-2xl font-black text-indigo-400 mb-10">HoldMoney.</h2>
@@ -23,8 +22,9 @@
             </nav>
             <div class="mt-auto pt-10">
                 <button onclick="handleLogout()" class="flex items-center w-full py-2 px-4 text-rose-400 hover:bg-slate-700 rounded-xl transition font-bold">
-                <span class="mr-2">⏻</span> Logout
+                    <span class="mr-2">⏻</span> Logout
                 </button>
+            </div>
         </aside>
 
         <main class="flex-1 p-10">
@@ -33,52 +33,92 @@
                 <p class="text-slate-500">Capai impian Anda dengan menabung secara konsisten.</p>
             </header>
 
-            <div id="savingsList" class="space-y-6 max-w-2xl">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8 max-w-2xl">
+                <h3 class="font-bold text-slate-800 mb-4">Tambah Target Baru</h3>
+                <div class="flex gap-4">
+                    <input type="text" id="savName" placeholder="Nama Impian (ex: Liburan Bali)" class="flex-1 border p-2 rounded-lg">
+                    <input type="number" id="savTarget" placeholder="Target (Rp)" class="w-40 border p-2 rounded-lg">
+                    <button onclick="addSaving()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700">Simpan</button>
+                </div>
             </div>
-        </main>
-        </div>
 
-        <script src="script.js"></script>
-        <script>
-            async function loadSavings() {
-                const savings = await fetchData('/savings');
+            <div id="savingsList" class="space-y-6 max-w-2xl"></div>
+        </main>
+    </div>
+
+    <script>
+        // FUNGSI UNTUK MENAMBAH TABUNGAN
+        async function addSaving() {
+            const name = document.getElementById('savName').value;
+            const target = document.getElementById('savTarget').value;
+
+            if (!name || !target) return alert('Mohon isi nama dan target nominal!');
+
+            await fetch('http://localhost:5000/savings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    target_amount: target
+                })
+            });
+
+            document.getElementById('savName').value = '';
+            document.getElementById('savTarget').value = '';
+            loadSavings();
+        }
+
+        async function loadSavings() {
+            try {
+                const res = await fetch('http://localhost:5000/savings');
+                const savings = await res.json();
                 const container = document.getElementById('savingsList');
 
                 if (savings.length === 0) {
-                    container.innerHTML = `<div class="bg-white p-8 rounded-2xl text-center text-slate-400 border border-slate-100">Belum ada target tabungan yang diatur.</div>`;
+                    container.innerHTML = '<p class="text-slate-400">Belum ada target tabungan.</p>';
                     return;
                 }
 
                 container.innerHTML = savings.map(s => {
-                    const percent = Math.min((s.current_amount / s.target_amount) * 100, 100);
+                    const progress = Math.min((Number(s.current_amount) / Number(s.target_amount)) * 100, 100);
                     return `
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between mb-4 items-center">
-                        <h3 class="font-bold text-xl text-slate-800">${s.name}</h3>
-                        <button onclick="deleteSavings(${s.id})" class="text-rose-500 hover:text-rose-700 text-sm font-bold">Hapus</button>
-                    </div>
-                    <div class="w-full bg-slate-100 rounded-full h-4 mb-3">
-                        <div class="bg-indigo-600 h-4 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-                    </div>
-                    <div class="flex justify-between text-sm font-bold text-slate-600">
-                        <span>Terkumpul: Rp ${parseInt(s.current_amount).toLocaleString('id-ID')}</span>
-                        <span>Target: Rp ${parseInt(s.target_amount).toLocaleString('id-ID')}</span>
-                    </div>
-                </div>`;
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between mb-2">
+                            <h3 class="font-bold text-slate-800">${s.name}</h3>
+                            <button onclick="deleteSaving(${s.id})" class="text-rose-500 text-sm hover:underline">Hapus</button>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5 mb-2">
+                            <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-slate-500">
+                            <span>Terkumpul: Rp ${Number(s.current_amount).toLocaleString('id-ID')}</span>
+                            <span>Target: Rp ${Number(s.target_amount).toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>`;
                 }).join('');
+            } catch (err) {
+                console.error("Error:", err);
             }
+        }
 
-            async function deleteSavings(id) {
-                if (confirm('Yakin ingin menghapus target tabungan ini?')) {
-                    await fetch(`http://localhost:5000/savings/${id}`, {
-                        method: 'DELETE'
-                    });
-                    loadSavings();
-                }
+        async function deleteSaving(id) {
+            if (confirm('Hapus target ini?')) {
+                await fetch(`http://localhost:5000/savings/${id}`, {
+                    method: 'DELETE'
+                });
+                loadSavings();
             }
+        }
 
-            loadSavings();
-        </script>
+        document.addEventListener('DOMContentLoaded', loadSavings);
+
+        function handleLogout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 
 </html>

@@ -20,6 +20,9 @@
                 <a href="kalender.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Kalender</a>
                 <a href="kategori.html" class="block py-2 px-4 hover:bg-slate-700 rounded-xl transition">Kategori</a>
             </nav>
+            <button onclick="handleLogout()" class="flex items-center w-full py-2 px-4 text-rose-400 hover:bg-slate-700 rounded-xl transition font-bold">
+                    <span class="mr-2">⏻</span> Logout
+                </button>
         </aside>
 
         <main class="flex-1 p-10">
@@ -27,9 +30,7 @@
                 <h1 class="text-3xl font-extrabold text-slate-800">Manajemen Anggaran</h1>
                 <p class="text-slate-500">Pantau pengeluaran berdasarkan kategori.</p>
             </header>
-
-            <div id="anggaranContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            </div>
+            <div id="anggaranContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </main>
     </div>
 
@@ -46,7 +47,6 @@
 
     <script src="script.js"></script>
     <script>
-        // Fungsi global agar bisa dipanggil dari tombol HTML
         function openModal(id, currentLimit) {
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editLimitInput').value = currentLimit;
@@ -59,55 +59,51 @@
 
         async function saveBudget(id) {
             const newLimit = document.getElementById('editLimitInput').value;
-            await fetch(`/budgets/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    limit: newLimit
-                })
+            const success = await updateData(`/budgets/${id}`, {
+                limit: parseFloat(newLimit)
             });
-            closeModal();
-            loadAnggaran(); // Refresh data
-        }
-
-        async function loadAnggaran() {
-            try {
-                const [trans, budgets] = await Promise.all([
-                    fetchData('/transactions'),
-                    fetchData('/budgets')
-                ]);
-
-                const container = document.getElementById('anggaranContainer');
-                container.innerHTML = budgets.map(b => {
-                    const used = trans.filter(t => t.category === b.cat && t.type === 'pengeluaran')
-                        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-                    const percent = Math.min((used / b.limit) * 100, 100);
-                    const color = percent > 90 ? 'bg-rose-500' : 'bg-indigo-500';
-
-                    return `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-bold text-slate-800">${b.cat}</h3>
-                            <button onclick="openModal('${b.id}', ${b.limit})" class="text-xs text-indigo-600 font-bold hover:underline">Edit</button>
-                        </div>
-                        <div class="flex justify-between text-xs mt-3 mb-2 font-medium">
-                            <span class="text-slate-500">Terpakai: Rp ${used.toLocaleString('id-ID')}</span>
-                            <span class="text-slate-800">Budget: Rp ${b.limit.toLocaleString('id-ID')}</span>
-                        </div>
-                        <div class="w-full bg-slate-100 rounded-full h-3">
-                            <div class="${color} h-3 rounded-full transition-all" style="width: ${percent}%"></div>
-                        </div>
-                    </div>`;
-                }).join('');
-            } catch (err) {
-                console.error("Gagal memuat anggaran:", err);
+            if (success) {
+                closeModal();
+                loadAnggaran();
+            } else {
+                alert("Gagal menyimpan perubahan.");
             }
         }
 
-        // Jalankan saat halaman dibuka
-        loadAnggaran();
+        async function loadAnggaran() {
+            const container = document.getElementById('anggaranContainer');
+            const [trans, budgets] = await Promise.all([fetchData('/transactions'), fetchData('/budgets')]);
+
+            if (!budgets || budgets.length === 0) {
+                container.innerHTML = '<p class="text-slate-500">Data anggaran belum diatur.</p>';
+                return;
+            }
+
+            container.innerHTML = budgets.map(b => {
+                const used = trans.filter(t => t.category === b.cat && t.type === 'pengeluaran')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                const limit = parseFloat(b.limit) || 0;
+                const percent = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
+                const color = percent > 90 ? 'bg-rose-500' : 'bg-indigo-500';
+
+                return `
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-800">${b.cat}</h3>
+                        <button onclick="openModal('${b.id}', ${limit})" class="text-xs text-indigo-600 font-bold hover:underline">Edit</button>
+                    </div>
+                    <div class="flex justify-between text-xs mt-3 mb-2 font-medium">
+                        <span class="text-slate-500">Terpakai: Rp ${used.toLocaleString('id-ID')}</span>
+                        <span class="text-slate-800">Limit: Rp ${limit.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-3">
+                        <div class="${color} h-3 rounded-full transition-all" style="width: ${percent}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAnggaran);
     </script>
 </body>
 

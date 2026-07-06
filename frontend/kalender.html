@@ -59,16 +59,40 @@
 
         <script src="script.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', async function() {
-                const trans = await fetchData('/transactions/by-date');
-                const events = trans.map(t => ({
-                    title: `${t.description} (Rp ${parseInt(t.amount).toLocaleString('id-ID')})`,
-                    start: t.date,
-                    backgroundColor: t.type === 'pemasukan' ? '#10b981' : '#f43f5e',
-                    borderColor: t.type === 'pemasukan' ? '#10b981' : '#f43f5e',
-                    textColor: '#ffffff'
-                }));
+            // Tambahkan fungsi ini agar fetch bisa berjalan
+            async function fetchData(endpoint) {
+                try {
+                    const response = await fetch(`http://localhost:5000${endpoint}`);
+                    if (!response.ok) throw new Error("Gagal load");
+                    return await response.json();
+                } catch (err) {
+                    console.error("Error:", err);
+                    return [];
+                }
+            }
 
+            document.addEventListener('DOMContentLoaded', async function() {
+                // 1. Fetch data
+                const trans = await fetchData('/transactions/by-date');
+                console.log("Data yang diterima:", trans); // Cek ini di console untuk memastikan data ada
+
+                // 2. Mapping data dengan pengecekan nama kolom
+                const events = trans.map(t => {
+                    // Kita gunakan '||' sebagai backup jika nama kolom di database Anda berbeda
+                    const tgl = t.date || t.tanggal;
+                    const desc = t.description || t.keterangan || 'Transaksi';
+                    const type = (t.type || '').toLowerCase();
+
+                    return {
+                        title: `${desc} (Rp ${Number(t.amount).toLocaleString('id-ID')})`,
+                        start: tgl,
+                        backgroundColor: type === 'pemasukan' ? '#10b981' : '#f43f5e',
+                        borderColor: type === 'pemasukan' ? '#10b981' : '#f43f5e',
+                        textColor: '#ffffff'
+                    };
+                });
+
+                // 3. Render Kalender
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
@@ -84,6 +108,11 @@
                 });
                 calendar.render();
             });
+
+            function handleLogout() {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
         </script>
 </body>
 

@@ -15,53 +15,84 @@ const pool = new Pool({
     port: 5432
 });
 
-// Auth
+// --- Auth ---
 app.post('/register', async(req, res) => {
-    const { username, password } = req.body;
-    const hash = await bcrypt.hash(password, 10);
-    await pool.query('INSERT INTO users (username, password) VALUES($1, $2)', [username, hash]);
-    res.status(201).json({ message: "Sukses" });
+    try {
+        const { username, password } = req.body;
+        const hash = await bcrypt.hash(password, 10);
+        await pool.query('INSERT INTO users (username, password) VALUES($1, $2)', [username, hash]);
+        res.status(201).json({ message: "Sukses" });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/login', async(req, res) => {
-    const { username, password } = req.body;
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    if (result.rows.length > 0 && await bcrypt.compare(password, result.rows[0].password)) {
-        res.json({ status: 'OK' });
-    } else { res.status(401).send('Gagal'); }
+    try {
+        const { username, password } = req.body;
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (result.rows.length > 0 && await bcrypt.compare(password, result.rows[0].password)) {
+            res.json({ status: 'OK' });
+        } else { res.status(401).send('Gagal'); }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// --- Transactions ---
 app.get('/transactions', async(req, res) => {
     try {
-        // Karena tidak ada kolom 'date', kita hapus 'date' dari query
-        // Kita gunakan 'id' untuk mengurutkan (ORDER BY id DESC)
         const query = `
-            SELECT t.id, t.amount, t.description, t.category_id, c.name as category
+            SELECT t.id, t.amount, t.description, t.category_id, t.type, c.name as category
             FROM transactions t
             LEFT JOIN categories c ON t.category_id = c.id
             ORDER BY t.id DESC
         `;
         const result = await pool.query(query);
         res.json(result.rows);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Pastikan rute ini ada di index.js
+app.get('/transactions/by-category', async(req, res) => {
+    try {
+        const query = `
+            SELECT c.name, SUM(t.amount) as total
+            FROM transactions t
+            JOIN categories c ON t.category_id = c.id
+            WHERE LOWER(t.type) = 'pengeluaran'
+            GROUP BY c.name
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
     } catch (err) {
-        console.error("Error fetching transactions:", err.message);
+        console.error("Error pada /transactions/by-category:", err);
         res.status(500).json({ error: err.message });
     }
 });
+
 app.get('/transactions/by-date', async(req, res) => {
-    const result = await pool.query('SELECT * FROM transactions ORDER BY date DESC');
-    res.json(result.rows);
+    try {
+        // Kita ambil created_at dan beri alias 'date'
+        const query = `
+            SELECT description, amount, type, 
+            TO_CHAR(created_at, 'YYYY-MM-DD') as date 
+            FROM transactions
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Database Error:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.post('/transactions', async(req, res) => {
-    const { description, amount, type, category } = req.body;
-    await pool.query(
-        'INSERT INTO transactions (description, amount, type, category, date) VALUES($1, $2, $3, $4, CURRENT_DATE)', [description, amount, type, category]
-    );
-    res.status(201).json({ message: "Sukses" });
+    try {
+        const { amount, description, category_id, type } = req.body;
+        const query = "INSERT INTO transactions (amount, description, category_id, type) VALUES ($1, $2, $3, $4)";
+        await pool.query(query, [amount, description, category_id, type]);
+        res.status(201).json({ message: "Sukses" });
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Kategori & Tabungan
+// --- Kategori & Tabungan ---
 app.get('/categories', async(req, res) => {
     const result = await pool.query('SELECT * FROM categories ORDER BY id ASC');
     res.json(result.rows);
@@ -74,17 +105,21 @@ app.post('/categories', async(req, res) => {
 });
 
 app.get('/savings', async(req, res) => {
-    const result = await pool.query('SELECT * FROM savings ORDER BY id DESC');
-    res.json(result.rows);
+    try {
+        const result = await pool.query('SELECT * FROM savings');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.post('/savings', async(req, res) => {
-    const { name, target_amount, current_amount } = req.body;
-    await pool.query('INSERT INTO savings (name, target_amount, current_amount) VALUES ($1, $2, $3)', [name, target_amount, current_amount]);
-    res.status(201).json({ message: "Sukses" });
+    const { name, target_amount } = req.body;
+    await pool.query('INSERT INTO savings (name, target_amount, current_amount) VALUES ($1, $2, 0)', [name, target_amount]);
+    res.status(201).send('Success');
 });
 
-// Rute untuk Anggaran
+// --- Rute Anggaran ---
 app.get('/budgets', async(req, res) => {
     try {
         const query = `
@@ -94,23 +129,16 @@ app.get('/budgets', async(req, res) => {
         `;
         const result = await pool.query(query);
         res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Rute untuk Update Budget (PUT)
 app.put('/budgets/:id', async(req, res) => {
-    const { id } = req.params;
-    const { limit } = req.body;
     try {
-        const query = "UPDATE budgets SET amount_limit = $1 WHERE id = $2";
-        await pool.query(query, [limit, id]);
+        const { id } = req.params;
+        const { limit } = req.body;
+        await pool.query("UPDATE budgets SET amount_limit = $1 WHERE id = $2", [limit, id]);
         res.status(200).send('Budget updated');
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
-
 
 app.listen(5000, () => console.log('Server berjalan di port 5000'));
