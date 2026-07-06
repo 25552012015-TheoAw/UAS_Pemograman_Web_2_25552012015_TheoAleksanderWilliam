@@ -37,9 +37,20 @@ CREATE DATABASE holdmoney;
 Buat Tabel:
 Jalankan perintah ini di database holdmoney:
 ```
-SQL
-CREATE TABLE transactions (id SERIAL PRIMARY KEY, type VARCHAR(20), amount NUMERIC, description TEXT, date DATE);
-CREATE TABLE savings (id SERIAL PRIMARY KEY, name VARCHAR(100), target_amount NUMERIC, current_amount NUMERIC DEFAULT 0);
+-- 1. Tabel Users
+CREATE TABLE users (id SERIAL PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(100));
+
+-- 2. Tabel Categories
+CREATE TABLE categories (id SERIAL PRIMARY KEY, name VARCHAR(50), type VARCHAR(20));
+
+-- 3. Tabel Budgets
+CREATE TABLE budgets (id SERIAL PRIMARY KEY, category_id INT REFERENCES categories(id), amount NUMERIC, month_year DATE);
+
+-- 4. Tabel Transactions
+CREATE TABLE transactions (id SERIAL PRIMARY KEY, user_id INT REFERENCES users(id), category_id INT REFERENCES categories(id), amount NUMERIC, description TEXT, date DATE);
+
+-- 5. Tabel Savings
+CREATE TABLE savings (id SERIAL PRIMARY KEY, user_id INT REFERENCES users(id), name VARCHAR(100), target_amount NUMERIC, current_amount NUMERIC DEFAULT 0);
 ```
 
 Koneksi Backend:
