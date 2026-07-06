@@ -32,12 +32,14 @@ Registrasi Akun: Pengguna baru dapat membuat akun dengan aman.
 
 Login Sistem: Akses terproteksi untuk menjaga kerahasiaan data keuangan pengguna.
 
-## ⚙️ Alur Penggunaan
-Pendaftaran: Pengguna mendaftar melalui halaman register.html.
+## 🌐 Alur Halaman Website
+Halaman Utama (index.html): Halaman landing page yang menyambut pengguna dan memberikan gambaran singkat tentang aplikasi.
 
-Login: Setelah terdaftar, pengguna masuk melalui halaman login.html.
+Autentikasi: Pengguna dapat menuju halaman login.html untuk masuk atau register.html jika belum memiliki akun.
 
-Akses Data: Setelah berhasil login, pengguna akan diarahkan ke dashboard.html untuk mulai mencatat keuangan pribadi.
+Dashboard Utama: Setelah login, pengguna diarahkan ke dashboard.html sebagai pusat kendali untuk melihat ringkasan keuangan.
+
+Navigasi Fitur: Dari dashboard, pengguna dapat mengakses fitur lain seperti pencatatan transaksi (transaksi.html), target tabungan (tabungan.html), dan pengaturan kategori (kategori.html).
 
 
 ## 🗄️ Konfigurasi Database
@@ -80,23 +82,17 @@ const pool = new Pool({
     port: 5432,
 });
 ```
+## ⚙️ Cara Menjalankan
+Clone repository.
 
-## ⚙️ Cara Menjalankan Aplikasi
-Clone Repository:
-```
-Bash
-git clone [https://github.com/username/HoldMoney-Financial-App.git](https://github.com/username/HoldMoney-Financial-App.git)
-```
-Install & Jalankan Backend:
-```
-Bash
-cd backend
-npm install
-node index.js
-```
+Buat database ```holdmoney``` & jalankan query database di atas.
+
+Di folder ```backend```, jalankan: ```npm install``` lalu node ```index.js.```
+
+Buka frontend/index.html di browser untuk memulai aplikasi.
 
 Akses Frontend:
-Buka file ```frontend/dashboard.html``` di browser Anda.
+Buka file ```frontend/dashboard.html``` lalu klik kanan -> Open With  Live Server langsung menuju browser Anda.
 
 ## 👤 Pengembang
 
