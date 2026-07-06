@@ -25,6 +25,20 @@ HoldMoney/
 ├── .gitignore        # Konfigurasi pengabaian file node_modules
 └── README.md         # Dokumentasi Project
 ````
+
+🔐 Fitur Autentikasi
+Registrasi Akun: Pengguna baru dapat membuat akun dengan aman.
+
+Login Sistem: Akses terproteksi untuk menjaga kerahasiaan data keuangan pengguna.
+
+⚙️ Alur Penggunaan
+Pendaftaran: Pengguna mendaftar melalui halaman register.html.
+
+Login: Setelah terdaftar, pengguna masuk melalui halaman login.html.
+
+Akses Data: Setelah berhasil login, pengguna akan diarahkan ke dashboard.html untuk mulai mencatat keuangan pribadi.
+
+
 🗄️ Konfigurasi Database
 Aplikasi ini memerlukan database PostgreSQL. Berikut langkah persiapannya:
 
