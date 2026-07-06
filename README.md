@@ -6,6 +6,7 @@ Aplikasi *Full-Stack* untuk mengelola keuangan pribadi secara efisien. Proyek in
 
 ## 🚀 Fitur Utama
 * **Dashboard Finansial**: Visualisasi total pemasukan, pengeluaran, saldo, dan akumulasi tabungan secara real-time.
+* **Manajemen Kategori**: Menambahkan, melihat, dan mengelola jenis kategori pemasukan/pengeluaran.
 * **Manajemen Transaksi**: Pencatatan arus kas yang mudah dengan kategori yang terorganisir.
 * **Monitoring Anggaran**: Melacak limit pengeluaran per kategori untuk menjaga kedisiplinan finansial.
 * **Target Tabungan**: Fitur manajemen impian/target tabungan dengan progres bar interaktif.
