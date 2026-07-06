@@ -26,12 +26,12 @@ HoldMoney/
 └── README.md         # Dokumentasi Project
 ````
 
-##🔐 Fitur Autentikasi
+## 🔐 Fitur Autentikasi
 Registrasi Akun: Pengguna baru dapat membuat akun dengan aman.
 
 Login Sistem: Akses terproteksi untuk menjaga kerahasiaan data keuangan pengguna.
 
-##⚙️ Alur Penggunaan
+## ⚙️ Alur Penggunaan
 Pendaftaran: Pengguna mendaftar melalui halaman register.html.
 
 Login: Setelah terdaftar, pengguna masuk melalui halaman login.html.
@@ -39,7 +39,7 @@ Login: Setelah terdaftar, pengguna masuk melalui halaman login.html.
 Akses Data: Setelah berhasil login, pengguna akan diarahkan ke dashboard.html untuk mulai mencatat keuangan pribadi.
 
 
-##🗄️ Konfigurasi Database
+## 🗄️ Konfigurasi Database
 Aplikasi ini memerlukan database PostgreSQL. Berikut langkah persiapannya:
 
 Buat Database:
@@ -80,7 +80,7 @@ const pool = new Pool({
 });
 ```
 
-##⚙️ Cara Menjalankan Aplikasi
+## ⚙️ Cara Menjalankan Aplikasi
 Clone Repository:
 ```
 Bash
@@ -97,7 +97,7 @@ node index.js
 Akses Frontend:
 Buka file ```frontend/dashboard.html``` di browser Anda.
 
-##👤 Pengembang
+## 👤 Pengembang
 
 Nama: Theo Aleksander William
 
